@@ -1,0 +1,83 @@
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(p8105.datasets)
+library(plotly)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+data("instacart")
+
+top10aisle = 
+instacart %>% 
+  group_by(aisle) %>% 
+    summarise(n_obs = n()) %>% 
+  mutate(product_ranking = min_rank(desc(n_obs))) %>% 
+  filter(product_ranking %in% c(1:10)) %>% 
+  arrange(desc(n_obs)) %>% 
+  pull(aisle)
+
+instacart = 
+  instacart %>% 
+  filter(aisle %in% top10aisle) %>% 
+  drop_na()
+
+aisle_count = 
+  instacart %>% 
+  group_by(aisle) %>% 
+  summarise(n_obs = n())
+
+aisle_count = 
+  aisle_count %>% 
+  filter(n_obs >= 10000) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, n_obs))
+
+aisle_count %>% 
+  plot_ly(x = ~aisle, y = ~n_obs, color = ~aisle,
+          type = "bar", colors = "viridis") %>% 
+  layout(title = "Top 10 aisle",
+         xaxis = list(title = "Aisle name"),
+         yaxis = list(title = "Number of items ordered"))
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+instacart %>% 
+  group_by(aisle) %>% 
+  summarise(mean_day = mean(days_since_prior_order)) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, mean_day)) %>% 
+  plot_ly(x = ~aisle, y = ~mean_day, color = ~aisle,
+          type = "scatter", mode = "makers", colors = "viridis") %>% 
+  layout(title = "mean days of reorder for each aisle",
+         xaxis = list(title = "Aisle name"),
+         yaxis = list(title = "mean of days of reorder(days)"))
+```
+
+### Chart C
+
+```{r}
+instacart %>% 
+  sample_n(5000) %>% 
+  plot_ly(x = ~aisle, y = ~order_hour_of_day, color = ~aisle,
+          type = "violin", colors = "viridis") %>% 
+   layout(title = "violin plot of the order hour of day for each aisle",
+         xaxis = list(title = "Aisle name"),
+         yaxis = list(title = "order hour of day"))
+```
