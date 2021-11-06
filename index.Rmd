@@ -1,0 +1,12 @@
+---
+title: "My personal website"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+# This is Hao Xu's personal website
+
+![](https://media0.giphy.com/media/YrZECW1GgBkqat6F0B/giphy.gif?cid=ecf05e47xgcssvxt0we8usvcdn0llal8oh4lnrf5cve0tkx8&rid=giphy.gif&ct=g)
+
